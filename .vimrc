@@ -5,6 +5,9 @@ filetype off
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#rc()
 
+" Let Vundle handle vundle
+Bundle 'VundleVim/Vundle.vim'
+
 " Dependencies of snipmate
 Bundle "MarcWeber/vim-addon-mw-utils"
 Bundle "tomtom/tlib_vim"
@@ -32,12 +35,16 @@ Bundle 'jiangmiao/auto-pairs'
 Bundle 'ervandew/supertab'
 " Fuzzy finder for vim (CTRL+P)
 Bundle 'kien/ctrlp.vim'
+" cpsm matcher for Ctrlp
+Bundle 'nixprime/cpsm'
 " For tests
 Bundle 'janko-m/vim-test'
 " Navigation tree
 Bundle 'scrooloose/nerdtree'
 " Dispatching the test runner to tmux pane
 Bundle 'tpope/vim-dispatch'
+" Auto ending Ruby structures
+Bundle 'tpope/vim-endwise'
 
 Bundle 'plasticboy/vim-markdown'
 
@@ -102,6 +109,9 @@ map <leader>r :r<cr> " \t to jump to related file
 
 set laststatus=2
 
+" Configure NERDTree actions
+nmap <F6> :NERDTreeToggle<CR>
+
 " Don't be a noob, join the no arrows key movement
 " inoremap  <Up>     <NOP>
 " inoremap  <Down>   <NOP>
@@ -125,6 +135,7 @@ set cuc cul"
 " Tab completion
 set wildmode=list:longest,list:full
 set wildignore+=*.o,*.obj,.git,*.rbc,*.class,.svn,vendor/gems/*
+
 """"""""""""""""""""""""""""""""""""""""
 " BACKUP / TMP FILES
 """"""""""""""""""""""""""""""""""""""""
