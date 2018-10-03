@@ -1,0 +1,8 @@
+[user]
+	name = Franck Delache
+	email = franck.delache@shopify.com
+[core]
+	editor = vim
+
+[alias]
+	up = pull --rebase --autostash
