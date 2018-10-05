@@ -104,7 +104,11 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs histor
 POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='red'
 
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 # load dev, but only if present and the shell is interactive
 if [[ -f /opt/dev/dev.sh ]] && [[ $- == *i* ]]; then
   source /opt/dev/dev.sh
 fi
+
+# Add chruby to PATH
+export PATH="/usr/local/share/chruby:$PATH"
