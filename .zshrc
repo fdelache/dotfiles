@@ -112,3 +112,8 @@ fi
 
 # Add chruby to PATH
 export PATH="/usr/local/share/chruby:$PATH"
+[[ -s "~/.gvm/scripts/gvm" ]] && source "~/.gvm/scripts/gvm"
+
+# Read the basic bash_aliases
+[[ -f ~/.bash_aliases ]] && source ~/.bash_aliases
+
