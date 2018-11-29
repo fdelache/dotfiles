@@ -1,8 +1,10 @@
 [user]
 	name = Franck Delache
 	email = franck.delache@shopify.com
+	signingkey = 95D02788F43BD7C4
 [core]
 	editor = vim
+	pager = less --quit-if-one-screen --no-init
 
 [alias]
 	up = pull --rebase --autostash
@@ -14,3 +16,7 @@
 
 	push-pull-request = "!sh -c \"git push -u origin `git rev-parse --abbrev-ref HEAD` && hub pull-request $*\""
 
+[diff]
+	algorithm = patience
+[protocol]
+	version = 2
