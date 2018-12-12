@@ -1,22 +1,35 @@
 [user]
 	name = Franck Delache
-	email = franck.delache@shopify.com
 	signingkey = 95D02788F43BD7C4
+	email = 43553065+fdelache@users.noreply.github.com
+
+[github]
+	user = fdelache
+
 [core]
 	editor = vim
 	pager = less --quit-if-one-screen --no-init
 
+[rebase]
+	autosquash = true
+
+[rerere]
+	enabled = 1
+
 [alias]
 	up = pull --rebase --autostash
 	st = status
-	
+	br = branch
+	co = checkout
+	df = diff
 	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
 	lg = !"git lg1"
-
+	prune-locals = !git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d
 	push-pull-request = "!sh -c \"git push -u origin `git rev-parse --abbrev-ref HEAD` && hub pull-request $*\""
 
 [diff]
 	algorithm = patience
+
 [protocol]
 	version = 2
