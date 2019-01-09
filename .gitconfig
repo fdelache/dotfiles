@@ -1,10 +1,8 @@
 [user]
-	name = Franck Delache
-	signingkey = 95D02788F43BD7C4
-	email = 43553065+fdelache@users.noreply.github.com
+	# These values are set in ~/.gitconfig_local
 
-[github]
-	user = fdelache
+[include]
+	path = ~/.gitconfig_local
 
 [core]
 	editor = vim
