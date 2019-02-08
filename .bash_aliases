@@ -1,4 +1,4 @@
-alias git-remove-untracked='git fetch --prune && git branch -vv | grep -v "\* " | egrep ": (disparue|gone)\]" | awk "{print \$1}" | xargs git branch -D' 
+alias git-remove-untracked='git fetch --prune 1>/dev/null && git branch -vv | grep -v "\* " | egrep ": (disparue|gone)\]" | awk "{print \$1}" | xargs git branch -D' 
 
 alias be='bundle exec'
 
