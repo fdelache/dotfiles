@@ -118,3 +118,5 @@ export PATH="/usr/local/share/chruby:$PATH"
 # Read the basic bash_aliases
 [[ -f $HOME/.bash_aliases ]] && source $HOME/.bash_aliases
 
+# Read the private environment variables
+[[ -f $HOME/.bash_env ]] && source $HOME/.bash_env
