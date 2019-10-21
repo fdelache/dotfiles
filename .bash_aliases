@@ -8,3 +8,5 @@ alias sbx='cd ~/sandbox/github.com/Shopify/shopify'
 # Configure BetterTouchBar
 export BTT_GIT_WORKING_DIR=~/src/github.com/Shopify/shopify
 
+# Extra Git aliases
+alias glm='git fetch origin +master:master'
