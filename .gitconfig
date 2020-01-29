@@ -33,7 +33,7 @@
 
 [protocol]
 	version = 2
-[credential]
-	helper = osxkeychain
 [gc]
 	writeCommitGraph = true
+[credential]
+	helper = store --file /opt/dev/var/private/git_credential_store
