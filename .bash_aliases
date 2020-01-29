@@ -11,3 +11,7 @@ export BTT_EVENTKIT_CALENDAR_NAMES='franck.delache@shopify.com'
 
 # Extra Git aliases
 alias glm='git fetch origin +master:master'
+
+# fzf config
+export FZF_DEFAULT_COMMAND="rg --files --hidden --ignore-file $HOME/.config/ripgrep/ignore"
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

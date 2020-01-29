@@ -120,3 +120,5 @@ export PATH="/usr/local/share/chruby:$PATH"
 
 # Read the private environment variables
 [[ -f $HOME/.bash_env ]] && source $HOME/.bash_env
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
