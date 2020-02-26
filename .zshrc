@@ -117,3 +117,6 @@ export PATH="/usr/local/share/chruby:$PATH"
 [[ -f $HOME/.bash_env ]] && source $HOME/.bash_env
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Alias thefuck magic script
+eval $(thefuck --alias)
