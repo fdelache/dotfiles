@@ -15,3 +15,6 @@ alias glm='git fetch origin +master:master'
 # fzf config
 export FZF_DEFAULT_COMMAND="rg --files --hidden --ignore-file $HOME/.config/ripgrep/ignore"
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Rubymine configuration
+alias mine="__shadowenv_data= mine"
