@@ -136,3 +136,4 @@ git_fuzzy_select_branch_commits() {
 
 zle     -N   git_fuzzy_select_branch_commits
 bindkey '^G' git_fuzzy_select_branch_commits
+if [ -e /Users/franckdelache/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/franckdelache/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
