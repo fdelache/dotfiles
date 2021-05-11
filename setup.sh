@@ -5,5 +5,6 @@ if [[ -z ${SPIN}  ]]; then
 	exit 1
 fi
 
+mv ~/.gitconfig ~/.gitconfig_local
 cp gitconfig ~/.gitconfig
 
