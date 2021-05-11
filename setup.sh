@@ -8,3 +8,4 @@ fi
 mv ~/.gitconfig ~/.gitconfig_local
 cp gitconfig ~/.gitconfig
 
+cp bash_aliases ~/.bash_aliases

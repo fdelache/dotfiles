@@ -18,3 +18,23 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # Rubymine configuration
 alias mine="__shadowenv_data= mine"
+
+# Common aliases
+alias l='ls -lah'
+alias la='ls -lAh'
+alias ll='ls -lh'
+alias ls='ls -G'
+alias lsa='ls -lah'
+
+# Common git aliases
+alias gcm='git checkout master'
+alias gl='git pull'
+
+# Easy navigation
+alias -='cd -'
+alias ...=../..
+alias ....=../../..
+alias .....=../../../..
+alias ......=../../../../..
+
+
