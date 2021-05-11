@@ -5,7 +5,10 @@ if [[ -z ${SPIN}  ]]; then
 	exit 1
 fi
 
-mv ~/.gitconfig ~/.gitconfig_local
+[[ ! -f ~/.gitconfig_local ]] && mv ~/.gitconfig ~/.gitconfig_local
 cp gitconfig ~/.gitconfig
 
 cp bash_aliases ~/.bash_aliases
+
+echo "# Read the basic bash_aliases" >> ~/.zshrc
+echo "[[ -f $HOME/.bash_aliases  ]] && source $HOME/.bash_aliases" >> ~/.zshrc
