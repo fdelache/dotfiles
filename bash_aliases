@@ -30,11 +30,3 @@ alias lsa='ls -lah'
 alias gcm='git checkout master'
 alias gl='git pull'
 
-# Easy navigation
-alias -='cd -'
-alias ...=../..
-alias ....=../../..
-alias .....=../../../..
-alias ......=../../../../..
-
-
