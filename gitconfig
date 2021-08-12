@@ -50,3 +50,7 @@
 	rebase = true
 [commit]
 	gpgsign = true
+[push]
+	default = current
+[help]
+	autoCorrect = 1
