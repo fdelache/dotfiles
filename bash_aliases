@@ -27,6 +27,6 @@ alias ls='ls -G'
 alias lsa='ls -lah'
 
 # Common git aliases
-alias gcm='git checkout master'
+alias gcm='git checkout $(git_main_branch)'
 alias gl='git pull'
 
