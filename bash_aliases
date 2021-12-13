@@ -30,3 +30,4 @@ alias lsa='ls -lah'
 alias gcm='git checkout $(git_main_branch)'
 alias gl='git pull'
 
+alias gg='gitgud'
