@@ -137,3 +137,13 @@ git_fuzzy_select_branch_commits() {
 zle     -N   git_fuzzy_select_branch_commits
 bindkey '^G' git_fuzzy_select_branch_commits
 if [ -e /Users/franckdelache/.nix-profile/etc/profile.d/nix.sh ]; then . /Users/franckdelache/.nix-profile/etc/profile.d/nix.sh; fi # added by Nix installer
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/franckdelache/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/franckdelache/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/franckdelache/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/franckdelache/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+
+[[ -f /opt/dev/sh/chruby/chruby.sh ]] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
+
+[[ -x /usr/local/bin/brew ]] && eval $(/usr/local/bin/brew shellenv)
