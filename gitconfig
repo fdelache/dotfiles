@@ -27,6 +27,7 @@
 	lg = !"git lg1"
 	prune-locals = !git branch --merged | grep -v \"\\*\" | xargs -n 1 git branch -d
 	push-pull-request = "!sh -c \"git push -u origin `git rev-parse --abbrev-ref HEAD` && hub pull-request $*\""
+	gone = ! git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D
 
 [diff]
 	algorithm = patience
@@ -54,3 +55,5 @@
 	default = current
 [help]
 	autoCorrect = 1
+[init]
+	defaultBranch = main
