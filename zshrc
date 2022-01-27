@@ -96,11 +96,9 @@ source $ZSH/oh-my-zsh.sh
 # alias ohmyzsh="mate ~/.oh-my-zsh
 
 # Init pure promt
-fpath+=("/opt/homebrew/share/zsh/site-functions")
+fpath+=$HOME/.zsh/pure
 autoload -U promptinit; promptinit
 prompt pure
-
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # load dev, but only if present and the shell is interactive
 if [[ -f /opt/dev/dev.sh ]] && [[ $- == *i* ]]; then
@@ -118,9 +116,6 @@ export PATH="/opt/dev/sh/chruby:$PATH"
 [[ -f $HOME/.bash_env ]] && source $HOME/.bash_env
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-# Alias thefuck magic script
-eval $(thefuck --alias)
 
 git_fuzzy_select_branch_commits() {
 	local selected preview_bindings
