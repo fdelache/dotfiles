@@ -24,7 +24,8 @@ git clone https://github.com/sindresorhus/pure.git "$HOME/.zsh/pure"
 git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 
 # Install molokai vim theme
-curl -fsSL https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim 
+mkdir -p ~/.vim/colors
+curl -fsSL https://raw.githubusercontent.com/tomasr/molokai/master/colors/molokai.vim --output ~/.vim/colors/molokai.vim
 
 # https://github.com/VundleVim/Vundle.vim/issues/511#issuecomment-134251209
 echo | echo | vim +PluginInstall +qall &>/dev/null
