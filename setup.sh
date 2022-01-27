@@ -30,17 +30,15 @@ curl -fsSL https://raw.githubusercontent.com/tomasr/molokai/master/colors/moloka
 # https://github.com/VundleVim/Vundle.vim/issues/511#issuecomment-134251209
 echo | echo | vim +PluginInstall +qall &>/dev/null
 
-# Install fzf
-sudo apt-get install -y fzf
-
 ###############################
 # Set personal configuration
 ###############################
 [[ ! -f ~/.gitconfig_local ]] && mv ~/.gitconfig ~/.gitconfig_local
-cp gitconfig ~/.gitconfig
+ln -s $(pwd)/gitconfig ~/.gitconfig
 
-cp bash_aliases ~/.bash_aliases
+ln -s $(pwd)/bash_aliases ~/.bash_aliases
 
-cp zshrc ~/.zshrc
-cp tmux.conf ~/.tmux.conf
-cp vimrc ~/.vimrc
+ln -s $(pwd)/zshrc ~/.zshrc
+ln -s $(pwd)/tmux.conf ~/.tmux.conf
+ln -s $(pwd)/vimrc ~/.vimrc
+
