@@ -53,7 +53,5 @@
 	autoCorrect = 1
 [init]
 	defaultBranch = main
-[gpg]
-	program = /opt/dev/bin/gpg-auto-pin
 [commit]
 	gpgSign = true
