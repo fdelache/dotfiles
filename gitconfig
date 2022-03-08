@@ -3,11 +3,11 @@
 
 [include]
 	path = ~/.gitconfig_local
+	path = /Users/franckdelache/.config/dev/gitconfig
 
 [core]
 	editor = vim
 	pager = less --quit-if-one-screen --no-init
-	commitGraph = true
 	autocrlf = input
 
 [rebase]
@@ -30,21 +30,7 @@
 	gone = ! git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D
 
 [diff]
-	algorithm = patience
 	noprefix = true
-
-[protocol]
-	version = 2
-[gc]
-	writeCommitGraph = true
-[url "https://github.com/Shopify/"]
-	insteadOf = git@github.com:Shopify/
-	insteadOf = git@github.com:shopify/
-	insteadOf = ssh://git@github.com/Shopify/
-	insteadOf = ssh://git@github.com/shopify/
-[credential]
-	helper = 
-	helper = store --file /opt/dev/var/private/git_credential_store
 [pull]
 	rebase = true
 [push]
