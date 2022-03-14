@@ -38,6 +38,7 @@ ln -s $(pwd)/gitconfig ~/.gitconfig
 
 ln -s $(pwd)/bash_aliases ~/.bash_aliases
 
+[[ -e ~/.zshrc ]] && mv ~/.zshrc ~/.zshrc.backup
 ln -s $(pwd)/zshrc ~/.zshrc
 ln -s $(pwd)/tmux.conf ~/.tmux.conf
 ln -s $(pwd)/vimrc ~/.vimrc
