@@ -39,5 +39,3 @@
 	autoCorrect = 1
 [init]
 	defaultBranch = main
-[commit]
-	gpgSign = true

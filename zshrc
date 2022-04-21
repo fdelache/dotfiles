@@ -143,3 +143,6 @@ if [ -f '/Users/franckdelache/Downloads/google-cloud-sdk/completion.zsh.inc' ]; 
 [[ -f /opt/dev/sh/chruby/chruby.sh ]] && type chruby >/dev/null 2>&1 || chruby () { source /opt/dev/sh/chruby/chruby.sh; chruby "$@"; }
 
 [[ -x /opt/homebrew/bin/brew ]] && eval $(/opt/homebrew/bin/brew shellenv)
+
+# Export the right tty for GPG (helps with spin signing)
+export GPG_TTY=$(tty)
