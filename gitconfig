@@ -9,6 +9,7 @@
 	editor = vim
 	pager = less --quit-if-one-screen --no-init
 	autocrlf = input
+	excludesfile = /Users/franckdelache/.gitignore
 
 [rebase]
 	autosquash = true
@@ -35,6 +36,7 @@
 	rebase = true
 [push]
 	default = current
+	autoSetupRemote = true
 [help]
 	autoCorrect = 1
 [init]
