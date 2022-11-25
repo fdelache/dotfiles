@@ -1,3 +1,7 @@
+# Uncomment this line to profile your zsh init script
+# Uncomment the last line as well
+# zmodload zsh/zprof
+
 # If you come from bash you might have to change your $PATH.
 export PATH=$HOME/bin:/usr/local/bin:/opt/homebrew/bin:$PATH
 
@@ -146,3 +150,7 @@ if [ -f '/Users/franckdelache/Downloads/google-cloud-sdk/completion.zsh.inc' ]; 
 
 # Export the right tty for GPG (helps with spin signing)
 export GPG_TTY=$(tty)
+
+# Uncomment to print out profiling results
+# You need to also uncomment the first line
+# zprof
