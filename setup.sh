@@ -1,9 +1,12 @@
 #!/bin/bash
 
-if [[ -z ${SPIN}  ]]; then
-	echo 'Must be run within a Spin environment' >&2
-	exit 1
+if [[ -z ${SPIN} ]]; then
+  echo 'Must be run within a Spin environment' >&2
+  exit 1
 fi
+
+# exit early for now
+exit 0
 
 ###############################
 # Install software
@@ -43,4 +46,3 @@ ln -s $(pwd)/zshrc ~/.zshrc
 ln -s $(pwd)/tmux.conf ~/.tmux.conf
 ln -s $(pwd)/vimrc ~/.vimrc
 ln -s $(pwd)/pryrc ~/.pryrc
-
