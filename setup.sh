@@ -5,6 +5,9 @@ if [[ -z ${SPIN} ]]; then
   exit 1
 fi
 
+# Install kitty terminfo, so we can use kitty properly in spin
+sudo apt-get install kitty-terminfo
+
 # exit early for now
 exit 0
 
