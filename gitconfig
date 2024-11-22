@@ -1,15 +1,10 @@
-[user]
-	# These values are set in ~/.gitconfig_local
-
 [include]
-	path = ~/.gitconfig_local
-	path = /Users/franckdelache/.config/dev/gitconfig
+	path = ~/.gitconfig.spin
 
 [core]
 	editor = vim
 	pager = less --quit-if-one-screen --no-init
 	autocrlf = input
-	excludesfile = /Users/franckdelache/.gitignore
 
 [rebase]
 	autosquash = true
