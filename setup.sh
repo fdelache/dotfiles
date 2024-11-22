@@ -10,11 +10,15 @@ sudo apt-get install kitty-terminfo
 
 # Configure zsh shell extensions
 mkdir -p ~/.zshrc.d/
-for file in $(pwd)/zshrc.d/*.sh; do
+for file in "$(pwd)"/zshrc.d/*.sh; do
   if [[ -e $file ]]; then
     ln -sfn "$file" ~/.zshrc.d/
   fi
 done
+
+# Configure git
+[[ ! -f ~/.gitconfig_local ]] && mv ~/.gitconfig ~/.gitconfig_local
+ln -s "$(pwd)/gitconfig" ~/.gitconfig
 
 # exit early for now
 exit 0
