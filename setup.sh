@@ -8,9 +8,13 @@ fi
 # Install kitty terminfo, so we can use kitty properly in spin
 sudo apt-get install kitty-terminfo
 
-# Configure the term title
+# Configure zsh shell extensions
 mkdir -p ~/.zshrc.d/
-ln -s $(pwd)/zshrc.d/00-set-title.sh ~/.zshrc.d/
+for file in $(pwd)/zshrc.d/*.sh; do
+  if [[ -e $file ]]; then
+    ln -sfn "$file" ~/.zshrc.d/
+  fi
+done
 
 # exit early for now
 exit 0
