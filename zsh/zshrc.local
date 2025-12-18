@@ -1,0 +1,9 @@
+# User-specific zsh configuration
+# Loaded by Omacase after all defaults
+
+DOTFILES_PATH="${DOTFILES_PATH:-$HOME/src/github.com/fdelache/dotfiles}"
+
+# Source modular configuration files
+[[ -f "$DOTFILES_PATH/zsh/prompt.zsh" ]] && source "$DOTFILES_PATH/zsh/prompt.zsh"
+[[ -f "$DOTFILES_PATH/zsh/aliases.zsh" ]] && source "$DOTFILES_PATH/zsh/aliases.zsh"
+[[ -f "$DOTFILES_PATH/zsh/functions.zsh" ]] && source "$DOTFILES_PATH/zsh/functions.zsh"

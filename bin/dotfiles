@@ -1,0 +1,72 @@
+#!/bin/zsh
+#
+# dotfiles - Personal dotfiles management on top of Omacase
+#
+set -e
+
+DOTFILES_PATH="${DOTFILES_PATH:-$HOME/src/github.com/fdelache/dotfiles}"
+OMACASE_PATH="$HOME/.local/share/omacase"
+OMACASE_INSTALL_URL="https://franck.isalazy.dev/omacase/install"
+
+# Colors
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+CYAN='\033[0;36m'
+DIM='\033[2m'
+NC='\033[0m'
+
+info() { echo "${CYAN}▶${NC} $1"; }
+ok() { echo "${GREEN}✓${NC} $1"; }
+warn() { echo "${YELLOW}○${NC} $1"; }
+dim() { echo "${DIM}  $1${NC}"; }
+
+# Check if gum is available for interactive prompts
+has_gum() { command -v gum &>/dev/null; }
+
+confirm() {
+  local prompt="$1"
+  if has_gum; then
+    gum confirm "$prompt"
+  else
+    echo -n "  $prompt [y/N] "
+    read -r response
+    [[ "$response" =~ ^[Yy]$ ]]
+  fi
+}
+
+# --- Omacase ---
+
+check_omacase() {
+  info "Omacase"
+
+  if [[ -d "$OMACASE_PATH" ]]; then
+    ok "Installed"
+    return 0
+  fi
+
+  warn "Not installed"
+  if confirm "Install Omacase?"; then
+    dim "Installing..."
+    curl -sSL "$OMACASE_INSTALL_URL" | zsh
+    ok "Installed"
+  else
+    echo ""
+    echo "Omacase is required. Run this script again after installing."
+    exit 1
+  fi
+}
+
+# --- Symlinks ---
+
+check_symlinks() {
+  info "Symlinks"
+  source "$DOTFILES_PATH/install/symlinks.sh"
+}
+
+# --- Main ---
+
+echo ""
+check_omacase
+echo ""
+check_symlinks
+echo ""
