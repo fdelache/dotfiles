@@ -6,7 +6,7 @@ skills: beads
 
 # Implementation Plan
 
-You are tasked with creating detailed implementation plans through an interactive, iterative process. Plans are tracked using beads for work management and stored in `history/plans/` for detailed documentation.
+You are tasked with creating detailed implementation plans through an interactive, iterative process. Plans are tracked entirely in beads - no separate markdown files.
 
 ## Initial Response
 
@@ -90,9 +90,24 @@ After getting initial clarifications:
    - Read the specific files/directories they mention
    - Only proceed once you've verified the facts yourself
 
-2. **Create research beads** for any discoveries that need tracking:
+2. **Create research beads** for significant discoveries:
    ```bash
-   bd create "Research: [topic]" -t task -p 2 --json
+   bd create "Research: [topic]" \
+     -t task \
+     -p 2 \
+     -d "$(cat <<'EOF'
+   ## Findings
+   [What was discovered]
+
+   ## Key Files
+   - `path/to/file.rb:123` - [what it does]
+   - `path/to/other.rb:45` - [what it does]
+
+   ## Implications
+   [How this affects the implementation]
+   EOF
+   )" \
+     --json
    ```
 
 3. **Spawn parallel sub-tasks for comprehensive research**:
@@ -103,24 +118,28 @@ After getting initial clarifications:
 
 5. **Track discovered work as beads**:
    ```bash
-   bd create "Discovered: [issue or requirement]" -t task -p 2 --deps discovered-from:bd-XXX --json
+   bd create "Discovered: [issue or requirement]" \
+     -t task \
+     -p 2 \
+     --deps discovered-from:bd-RESEARCH \
+     -d "[Description of what was discovered and why it matters]" \
+     --json
    ```
 
 6. **Present findings and design options**:
    ```
    Based on my research, here's what I found:
 
-   **Current State:**
-   - [Key discovery about existing code]
-   - [Pattern or convention to follow]
+   **Research beads created**:
+   - bd-XXX: Research: [topic] - [key finding]
+   - bd-YYY: Research: [topic] - [key finding]
+
+   **Discovered work**:
+   - bd-ZZZ: [issue found during research]
 
    **Design Options:**
    1. [Option A] - [pros/cons]
    2. [Option B] - [pros/cons]
-
-   **Discovered Work** (created as beads):
-   - bd-YYY: [description]
-   - bd-ZZZ: [description]
 
    Which approach aligns best with your vision?
    ```
@@ -129,12 +148,7 @@ After getting initial clarifications:
 
 Once aligned on approach:
 
-1. **Create the epic bead** for the overall plan:
-   ```bash
-   bd create "[Feature/Task Name] Implementation" -t epic -p 1 --json
-   ```
-
-2. **Propose phase structure**:
+1. **Propose phase structure**:
    ```
    Here's my proposed plan structure:
 
@@ -149,229 +163,266 @@ Once aligned on approach:
    Does this phasing make sense? Should I adjust the order or granularity?
    ```
 
-3. **Get feedback on structure** before writing details
+2. **Get feedback on structure** before creating beads
 
-### Step 4: Detailed Plan Writing
+### Step 4: Create Plan in Beads
 
-After structure approval:
+After structure approval, create the complete plan in beads:
 
-1. **Create phase beads** linked to the epic:
+1. **Create the epic bead** with full plan details:
    ```bash
-   bd create "Phase 1: [name]" -t task -p 1 --deps bd-EPIC --json
-   bd create "Phase 2: [name]" -t task -p 1 --deps bd-PHASE1 --json
-   bd create "Phase 3: [name]" -t task -p 1 --deps bd-PHASE2 --json
+   bd create "[Feature Name] Implementation" \
+     -t epic \
+     -p 1 \
+     -d "$(cat <<'EOF'
+   ## Overview
+   [Brief description of what we're implementing and why]
+
+   ## Current State
+   [What exists now, key constraints discovered]
+   - [Finding with file:line reference]
+   - [Pattern to follow]
+
+   ## Desired End State
+   [Specification of the desired end state and how to verify it]
+
+   ## Out of Scope
+   [Explicitly list what we're NOT doing to prevent scope creep]
+   EOF
+   )" \
+     --design "$(cat <<'EOF'
+   ## Implementation Approach
+   [High-level strategy and reasoning]
+
+   ## Testing Strategy
+   ### Unit Tests:
+   - [What to test]
+   - [Key edge cases]
+
+   ### Integration Tests:
+   - [End-to-end scenarios]
+
+   ### Manual Testing:
+   1. [Specific verification step]
+   2. [Another verification step]
+   EOF
+   )" \
+     --acceptance "$(cat <<'EOF'
+   ## Automated Verification
+   - [ ] Tests pass: `/opt/dev/bin/dev test [files]`
+   - [ ] Type checking passes: `/opt/dev/bin/dev typecheck`
+   - [ ] Linting passes: `/opt/dev/bin/dev style --include-branch-commits`
+
+   ## Manual Verification
+   - [ ] Feature works as expected when tested
+   - [ ] No regressions in related features
+   EOF
+   )" \
+     --json
    ```
 
-2. **Write the detailed plan** to `history/plans/YYYY-MM-DD-bd-XXX-description.md`
-   - Format: `YYYY-MM-DD-bd-XXX-description.md` where:
-     - YYYY-MM-DD is today's date
-     - bd-XXX is the epic bead ID
-     - description is a brief kebab-case description
+2. **Link research beads to the epic**:
+   ```bash
+   bd dep add bd-EPIC bd-RESEARCH1
+   bd dep add bd-EPIC bd-RESEARCH2
+   ```
 
-3. **Use this template structure**:
+3. **Create phase beads** as children of the epic:
+   ```bash
+   bd create "Phase 1: [Descriptive Name]" \
+     -t task \
+     -p 1 \
+     --parent bd-EPIC \
+     -d "$(cat <<'EOF'
+   ## Overview
+   [What this phase accomplishes]
 
-````markdown
-# [Feature/Task Name] Implementation Plan
+   ## Changes Required
 
-**Epic**: bd-XXX
-**Created**: YYYY-MM-DD
-**Status**: Planning
+   ### 1. [Component/File Group]
+   **File**: `path/to/file.ext`
+   **Changes**: [Summary of changes]
 
-## Overview
+   ```[language]
+   // Specific code to add/modify
+   ```
+   EOF
+   )" \
+     --acceptance "$(cat <<'EOF'
+   - [ ] [Specific criterion for this phase]
+   - [ ] Tests pass for affected files
+   EOF
+   )" \
+     --json
+   ```
 
-[Brief description of what we're implementing and why]
-
-## Beads
-
-- **Epic**: bd-XXX - [Feature Name] Implementation
-- **Phase 1**: bd-YYY - [Phase 1 Name]
-- **Phase 2**: bd-ZZZ - [Phase 2 Name]
-- **Discovered**: bd-AAA, bd-BBB (linked via discovered-from)
-
-## Current State Analysis
-
-[What exists now, what's missing, key constraints discovered]
-
-### Key Discoveries:
-- [Important finding with file:line reference]
-- [Pattern to follow]
-- [Constraint to work within]
-
-## Desired End State
-
-[Specification of the desired end state after this plan is complete, and how to verify it]
-
-## What We're NOT Doing
-
-[Explicitly list out-of-scope items to prevent scope creep]
-
-## Implementation Approach
-
-[High-level strategy and reasoning]
-
----
-
-## Phase 1: [Descriptive Name]
-**Bead**: bd-YYY
-
-### Overview
-[What this phase accomplishes]
-
-### Changes Required:
-
-#### 1. [Component/File Group]
-**File**: `path/to/file.ext`
-**Changes**: [Summary of changes]
-
-```[language]
-// Specific code to add/modify
-```
-
-### Success Criteria:
-
-#### Automated Verification:
-- [ ] Tests pass: `/opt/dev/bin/dev test [file]`
-- [ ] Type checking passes: `/opt/dev/bin/dev typecheck`
-- [ ] Linting passes: `/opt/dev/bin/dev style --include-branch-commits`
-- [ ] CI checks pass: `shadowenv exec -- /opt/dev/bin/dev check -x`
-
-#### Manual Verification:
-- [ ] Feature works as expected when tested
-- [ ] No regressions in related features
-
-**Completion**: When all criteria pass, close the bead:
-```bash
-bd close bd-YYY --reason "Phase 1 complete: [summary]"
-```
-
----
-
-## Phase 2: [Descriptive Name]
-**Bead**: bd-ZZZ
-
-[Similar structure...]
-
----
-
-## Testing Strategy
-
-### Unit Tests:
-- [What to test]
-- [Key edge cases]
-
-### Integration Tests:
-- [End-to-end scenarios]
-
-### Manual Testing Steps:
-1. [Specific step to verify feature]
-2. [Another verification step]
-
-## References
-
-- Epic bead: bd-XXX
-- Related beads: bd-AAA, bd-BBB
-- Similar implementation: `[file:line]`
-````
+4. **Add dependencies between phases**:
+   ```bash
+   bd dep add bd-PHASE2 bd-PHASE1
+   bd dep add bd-PHASE3 bd-PHASE2
+   ```
 
 ### Step 5: Review and Iterate
 
-1. **Present the draft plan location and beads**:
+1. **Present the plan summary**:
    ```
-   I've created the implementation plan:
+   I've created the implementation plan in beads:
 
-   **Plan document**: `history/plans/YYYY-MM-DD-bd-XXX-description.md`
+   **Epic**: bd-XXX - [Feature] Implementation
 
-   **Beads created**:
-   - bd-XXX (epic): [Feature] Implementation
-   - bd-YYY (task): Phase 1 - [name]
-   - bd-ZZZ (task): Phase 2 - [name]
+   **Research** (informing this plan):
+   - bd-RRR: Research: [topic]
+   - bd-SSS: Research: [topic]
+
+   **Phases**:
+   - bd-YYY: Phase 1 - [name]
+   - bd-ZZZ: Phase 2 - [name] (blocked by bd-YYY)
+   - bd-AAA: Phase 3 - [name] (blocked by bd-ZZZ)
+
+   **Discovered Work**:
+   - bd-BBB: [description] (from bd-RRR)
+
+   View full details: `bd show bd-XXX`
+   View ready work: `bd ready`
 
    Please review and let me know:
    - Are the phases properly scoped?
    - Are the success criteria specific enough?
    - Any technical details that need adjustment?
-   - Missing edge cases or considerations?
    ```
 
-2. **Iterate based on feedback** - be ready to:
-   - Add missing phases (create new beads)
-   - Adjust technical approach
-   - Clarify success criteria
-   - Add/remove scope items
-   - Create additional beads for discovered work
+2. **Iterate based on feedback** using beads commands:
+   ```bash
+   # Update epic description
+   bd edit bd-XXX --field description
+
+   # Add a new phase
+   bd create "Phase 4: [name]" -t task --parent bd-EPIC --json
+
+   # Update acceptance criteria
+   bd edit bd-YYY --field acceptance
+
+   # Add a comment with new findings
+   bd comment bd-XXX "Discovered: [new information]"
+
+   # Create follow-up research if needed
+   bd create "Research: [new topic]" -t task -p 2 --deps discovered-from:bd-EPIC --json
+   ```
 
 3. **Continue refining** until the user is satisfied
 
 ## Important Guidelines
 
-1. **Use Beads for ALL Tracking**:
-   - Epic bead for the overall plan
-   - Task beads for each phase
-   - Discovered work linked with `discovered-from`
-   - Do NOT use markdown TODOs or other tracking
+1. **Beads is the Single Source of Truth**:
+   - ALL plan content lives in beads fields (description, design, acceptance)
+   - NO separate markdown files in `history/plans/`
+   - Use `bd show bd-XXX` to view full plan details
+   - Use comments for updates during execution
 
-2. **Be Skeptical**:
+2. **Research Beads are Valuable**:
+   - Create research beads for significant findings
+   - Link them to epics and discovered work with dependencies
+   - They form a knowledge graph you can revisit later
+   - Use `bd search "Research:"` to find past research
+
+3. **Field Usage**:
+   - `description`: Overview, current state, desired end state, out of scope, findings
+   - `design`: Implementation approach, testing strategy
+   - `acceptance`: Success criteria (automated and manual)
+   - `comments`: Ongoing discoveries, blockers, updates
+
+4. **Be Skeptical**:
    - Question vague requirements
    - Identify potential issues early
    - Don't assume - verify with code
 
-3. **Be Interactive**:
-   - Don't write the full plan in one shot
+5. **Be Interactive**:
+   - Don't create all beads in one shot
    - Get buy-in at each major step
    - Allow course corrections
 
-4. **Be Thorough**:
+6. **Be Thorough**:
    - Read all context files COMPLETELY before planning
    - Research actual code patterns using parallel sub-tasks
    - Include specific file paths and line numbers
    - Write measurable success criteria
 
-5. **Be Practical**:
+7. **Be Practical**:
    - Focus on incremental, testable changes
    - Consider migration and rollback
    - Think about edge cases
-   - Include "what we're NOT doing"
+   - Include "out of scope" section
 
-6. **No Open Questions in Final Plan**:
+8. **No Open Questions in Final Plan**:
    - If you encounter open questions during planning, STOP
    - Research or ask for clarification immediately
-   - The implementation plan must be complete and actionable
-
-## Success Criteria Guidelines
-
-**Always separate success criteria into two categories:**
-
-1. **Automated Verification** (can be run by agents):
-   - Commands: `/opt/dev/bin/dev test`, `/opt/dev/bin/dev typecheck`, etc.
-   - Specific files that should exist
-   - Code compilation/type checking
-
-2. **Manual Verification** (requires human testing):
-   - UI/UX functionality
-   - Performance under real conditions
-   - Edge cases hard to automate
+   - The plan must be complete and actionable
 
 ## Bead Workflow Summary
 
 ```bash
-# Check existing work
+# Check existing work and research
 bd ready --json
+bd search "Research:" --json
 
-# Create epic for the plan
-bd create "Feature Implementation" -t epic -p 1 --json
+# Create research beads during discovery
+bd create "Research: Authentication flow" -t task -p 2 \
+  -d "Findings about how auth works..." \
+  --json
 
-# Create phase tasks (with dependencies)
-bd create "Phase 1: Setup" -t task -p 1 --deps bd-EPIC --json
-bd create "Phase 2: Core" -t task -p 1 --deps bd-PHASE1 --json
+# Create epic with full plan
+bd create "Feature Implementation" -t epic -p 1 \
+  -d "Overview and context..." \
+  --design "Implementation approach..." \
+  --acceptance "Success criteria..." \
+  --json
 
-# Track discovered work
-bd create "Found: edge case" -t bug -p 2 --deps discovered-from:bd-EPIC --json
+# Link research to epic
+bd dep add bd-EPIC bd-RESEARCH
+
+# Create phase tasks as children
+bd create "Phase 1: Setup" -t task -p 1 --parent bd-EPIC --json
+bd create "Phase 2: Core" -t task -p 1 --parent bd-EPIC --json
+
+# Add phase dependencies
+bd dep add bd-PHASE2 bd-PHASE1
+
+# Track discovered work linked to research
+bd create "Found: edge case" -t bug -p 2 --deps discovered-from:bd-RESEARCH --json
+
+# Add comments for updates
+bd comment bd-XXX "Research finding: [details]"
+
+# View full plan
+bd show bd-EPIC
 
 # When starting work
-bd update bd-YYY --status in_progress --json
+bd update bd-YYY --status in_progress
 
 # When completing
-bd close bd-YYY --reason "Completed: summary" --json
+bd close bd-YYY --reason "Completed: summary"
+```
+
+## Viewing Plans and Research
+
+```bash
+# Show epic with all details
+bd show bd-EPIC
+
+# Show all phases (children)
+bd list --parent bd-EPIC
+
+# Find all research beads
+bd search "Research:"
+
+# Show what's ready to work on
+bd ready
+
+# Show blocked items
+bd blocked
+
+# Find research related to a topic
+bd search "Research: auth"
 ```
 
 ## Example Interaction Flow
@@ -380,16 +431,23 @@ bd close bd-YYY --reason "Completed: summary" --json
 User: /plan
 Assistant: I'll help you create a detailed implementation plan...
 
-User: We need to add webhook support for balance updates. See the spec in docs/webhook-spec.md
-Assistant: Let me read that spec file completely first...
+User: We need to add webhook support for balance updates
+Assistant: Let me research the codebase first...
 
-[Reads file fully, spawns research tasks]
+[Spawns research tasks, reads files]
 
-Based on the spec and my research, I understand we need to add webhook delivery for balance change events. I've created an initial bead to track this:
+I've created research beads for my findings:
 
-bd-42 (epic): Webhook Support for Balance Updates
+**Research beads**:
+- bd-r1a: Research: Event system - Found publisher at app/services/events/publisher.rb:45
+- bd-r2b: Research: Webhook config - Subscriptions in app/models/webhook_subscription.rb
+- bd-r3c: Research: Balance updates - Changes happen in app/services/balance_service.rb:128
 
-Before I finalize the plan, I have some questions...
+**Discovered**:
+- bd-d4e: Discovered: No retry mechanism for failed webhooks (from bd-r1a)
 
-[Interactive process continues, phases created as dependent beads...]
-```
+Questions:
+- Should webhooks be synchronous or queued?
+- What payload format - our standard or Stripe-compatible?
+
+User: Queued, and use our standard format
