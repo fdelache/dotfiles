@@ -14,8 +14,14 @@ description: INVOKE BEFORE any git commit, PR creation, or Graphite CLI (gt) ope
 
 ## Graphite CLI Commands
 
+### Viewing Stack Status
+- `gt log` - Show the current stack structure with PRs and commits
+- `gt log --short` - Compact view of the stack
+
 ### Creating Commits and Branches
-- `gt create -am "message"` - Stage all changes and create new branch with commit
+- `git add <files> && gt create -m "message"` - Stage specific files, then create branch
+- `gt create -a -m "message"` - Stage ALL changes (including untracked) and create new branch
+- `gt create -u -m "message"` - Stage only tracked file updates and create new branch
 - `gt modify` - Amend current commit
 - `gt modify -a` - Stage all changes and amend
 - `gt modify -c -m "message"` - Create new commit instead of amending
@@ -40,12 +46,30 @@ description: INVOKE BEFORE any git commit, PR creation, or Graphite CLI (gt) ope
 | "Aborting submit due to out of date trunk" | Run `gt get` to update trunk |
 | Branch stacked on merged PR | `gt track --parent main` then `gt restack --only` |
 
-### Updating PR Title/Description After Creation
+### PR Workflow: Submit Then Configure
 
-`gt submit` cannot update PR metadata for existing PRs. Use:
-```
-gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f title="..." -f body="$(cat body.md)"
-```
+1. **Submit PR** (creates in draft mode when using `--no-edit`):
+   ```bash
+   gt submit --no-edit
+   ```
+
+2. **Update PR description** using GitHub API:
+   ```bash
+   gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f title="Title" -f body="$(cat <<'EOF'
+   ## Summary
+   - Change 1
+   - Change 2
+
+   ## Test plan
+   - [ ] Test item
+   EOF
+   )"
+   ```
+
+3. **Mark ready for review**:
+   ```bash
+   gh pr ready {number} -R {owner}/{repo}
+   ```
 
 ## Reading GitHub Issues and PRs
 
