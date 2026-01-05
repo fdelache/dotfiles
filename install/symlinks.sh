@@ -12,6 +12,7 @@ SYMLINKS=(
   "claude/agents:$HOME/.claude/agents"
   "claude/commands:$HOME/.claude/commands"
   "claude/skills:$HOME/.claude/skills"
+  "claude/settings.json:$HOME/.claude/settings.json"
 )
 
 # Colors (may be inherited from parent script)
