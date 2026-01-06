@@ -1,6 +1,6 @@
 ---
 name: graphite
-description: Reference for Graphite CLI (gt) commands, git workflow, and PR best practices. Loaded by /create-and-push-pr and /amend-and-push-pr commands.
+description: Use when creating PRs, pushing branches, or using Graphite CLI (gt) commands. Covers gt submit, gt create, stacked PRs, and PR description formatting.
 ---
 
 # Graphite CLI Reference
