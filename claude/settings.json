@@ -1,8 +1,0 @@
-{
-  "apiKeyHelper": "/opt/dev/bin/user/devx llm-gateway print-token --key",
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://proxy.shopify.ai/vendors/anthropic-claude-code",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "1"
-  },
-  "model": "opus"
-}
