@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# Read JSON input from stdin
+input=$(cat)
+
+# Colors
+GREEN='\033[32m'
+YELLOW='\033[33m'
+RED='\033[31m'
+CYAN='\033[36m'
+RESET='\033[0m'
+
+# Get current directory basename
+dir_name=$(basename "$PWD")
+status="${CYAN}${dir_name}${RESET}"
+
+# Git information (only if in a git repo)
+if git rev-parse --git-dir > /dev/null 2>&1; then
+    branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+
+    # Get file change counts using porcelain format
+    git_status=$(git --no-optional-locks status --porcelain 2>/dev/null)
+    staged=$(echo "$git_status" | grep -c '^[MADRC]')
+    unstaged=$(echo "$git_status" | grep -c '^.[MD]')
+    untracked=$(echo "$git_status" | grep -c '^??')
+
+    stats=""
+    [ "$staged" -gt 0 ] && stats="+${staged}"
+    [ "$unstaged" -gt 0 ] && stats="${stats:+$stats }~${unstaged}"
+    [ "$untracked" -gt 0 ] && stats="${stats:+$stats }?${untracked}"
+
+    status="${status} ${CYAN}(${branch}${stats:+ $stats})${RESET}"
+fi
+
+# Context usage with color coding
+if [ -n "$input" ]; then
+    current=$(echo "$input" | jq -r '.context_window.current_usage | .input_tokens + .cache_creation_input_tokens + .cache_read_input_tokens' 2>/dev/null)
+    size=$(echo "$input" | jq -r '.context_window.context_window_size' 2>/dev/null)
+
+    if [ -n "$current" ] && [ -n "$size" ] && [ "$size" -gt 0 ] 2>/dev/null; then
+        pct=$((current * 100 / size))
+
+        if [ "$pct" -lt 50 ]; then
+            color="${GREEN}"
+        elif [ "$pct" -lt 75 ]; then
+            color="${YELLOW}"
+        else
+            color="${RED}"
+        fi
+
+        status="${status} ${color}ctx:${pct}%${RESET}"
+    fi
+fi
+
+printf "%b" "$status"

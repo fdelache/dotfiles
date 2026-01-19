@@ -12,6 +12,7 @@ SYMLINKS=(
   "claude/agents:$HOME/.claude/agents"
   "claude/commands:$HOME/.claude/commands"
   "claude/skills:$HOME/.claude/skills"
+  "claude/statusline.sh:$HOME/.claude/statusline.sh"
 )
 
 # Colors (may be inherited from parent script)
