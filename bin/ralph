@@ -1,0 +1,273 @@
+#!/bin/zsh
+#
+# ralph - Run Claude in an iterative loop until completion
+#
+# Usage: ralph <prd-file> [--max-iterations N] [--working-dir DIR]
+#
+set -e
+
+# Colors (using $'...' for proper escape interpretation)
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[0;33m'
+CYAN=$'\033[0;36m'
+DIM=$'\033[2m'
+BOLD=$'\033[1m'
+NC=$'\033[0m'
+
+info() { echo "${CYAN}[ralph]${NC} $1"; }
+ok() { echo "${GREEN}[ralph]${NC} $1"; }
+warn() { echo "${YELLOW}[ralph]${NC} $1"; }
+error() { echo "${RED}[ralph]${NC} $1" >&2; }
+dim() { echo "${DIM}$1${NC}"; }
+
+# Completion marker - Claude outputs this when done
+COMPLETION_MARKER="[RALPH_COMPLETE]"
+
+# Defaults
+MAX_ITERATIONS=50
+WORKING_DIR="."
+
+usage() {
+  cat <<EOF
+${BOLD}ralph${NC} - Run Claude in an iterative loop until completion
+
+${BOLD}USAGE${NC}
+    ralph <prd-file> [options]
+
+${BOLD}OPTIONS${NC}
+    --max-iterations N    Maximum iterations before stopping (default: 50)
+    --working-dir DIR     Working directory for Claude (default: current)
+    --dry-run             Show what would be done without running
+    -h, --help            Show this help
+
+${BOLD}DESCRIPTION${NC}
+    Ralph runs Claude repeatedly with the same PRD file until Claude
+    outputs ${COMPLETION_MARKER} indicating the work is complete.
+
+    After each iteration, ralph commits any changes (excluding the PRD file).
+    If Claude modifies the PRD, it is automatically restored from git to
+    ensure a consistent prompt across all iterations.
+
+    If run outside a git repo, ralph initializes one and commits the PRD
+    as the reference version.
+
+${BOLD}PRD REQUIREMENTS${NC}
+    Your PRD should instruct Claude to:
+    1. Work autonomously without asking for permission
+    2. Maintain a RALPH_NOTES.md file for cross-iteration learnings
+    3. Use quality gates to determine completion
+    4. Output ${COMPLETION_MARKER} when all quality gates pass
+
+${BOLD}EXAMPLE${NC}
+    ralph my-feature.prd.md --max-iterations 20
+EOF
+}
+
+# Parse arguments
+PRD_FILE=""
+DRY_RUN=false
+
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --max-iterations)
+      MAX_ITERATIONS="$2"
+      shift 2
+      ;;
+    --working-dir)
+      WORKING_DIR="$2"
+      shift 2
+      ;;
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    -*)
+      error "Unknown option: $1"
+      usage
+      exit 1
+      ;;
+    *)
+      if [[ -z "$PRD_FILE" ]]; then
+        PRD_FILE="$1"
+      else
+        error "Unexpected argument: $1"
+        usage
+        exit 1
+      fi
+      shift
+      ;;
+  esac
+done
+
+# Validate
+if [[ -z "$PRD_FILE" ]]; then
+  error "PRD file required"
+  usage
+  exit 1
+fi
+
+if [[ ! -f "$PRD_FILE" ]]; then
+  error "PRD file not found: $PRD_FILE"
+  exit 1
+fi
+
+# Resolve to absolute path
+PRD_FILE=$(realpath "$PRD_FILE")
+PRD_FILENAME=$(basename "$PRD_FILE")
+
+info "Starting Ralph loop"
+dim "  PRD: $PRD_FILENAME"
+dim "  Max iterations: $MAX_ITERATIONS"
+dim "  Working dir: $WORKING_DIR"
+dim "  Completion marker: $COMPLETION_MARKER"
+echo ""
+
+if $DRY_RUN; then
+  warn "Dry run - would execute:"
+  dim "  cd $WORKING_DIR && cat $PRD_FILE | devx claude -- --dangerously-skip-permissions --print"
+  exit 0
+fi
+
+cd "$WORKING_DIR"
+
+# Ensure we're in a git repo, initialize if needed
+if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+  info "Initializing git repository..."
+  git init
+  ok "Git repository initialized"
+fi
+
+# Ensure PRD is tracked in git (this becomes our reference)
+if ! git ls-files --error-unmatch "$PRD_FILE" &>/dev/null; then
+  info "Adding PRD to git as reference..."
+  git add "$PRD_FILE"
+  git commit -m "ralph: add PRD file
+
+$PRD_FILENAME"
+  ok "PRD committed as reference"
+fi
+
+iteration=0
+start_time=$(date +%s)
+
+# Stable log file in /tmp based on PRD path hash
+LOG_FILE="/tmp/ralph-$(echo "$PRD_FILE" | shasum -a 256 | cut -c1-8).log"
+: > "$LOG_FILE"  # Truncate/create log file
+
+echo ""
+dim "Monitor progress: tail -f $LOG_FILE"
+
+while [[ $iteration -lt $MAX_ITERATIONS ]]; do
+  ((++iteration))
+
+  echo ""
+  echo "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  info "Iteration $iteration / $MAX_ITERATIONS"
+  echo "${BOLD}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+
+  iteration_start=$(date +%s)
+
+  # Write iteration header to log
+  echo "" >> "$LOG_FILE"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >> "$LOG_FILE"
+  echo "[ralph] Iteration $iteration / $MAX_ITERATIONS - $(date '+%Y-%m-%d %H:%M:%S')" >> "$LOG_FILE"
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >> "$LOG_FILE"
+  echo "" >> "$LOG_FILE"
+
+  # Run claude with a minimal prompt that references the PRD file
+  # Claude will read the PRD file itself, avoiding shell escaping issues
+  # --dangerously-skip-permissions: run autonomously without permission prompts
+  # --output-format stream-json --verbose: stream events in real-time for monitoring
+  # Use tee to write real-time to LOG_FILE while capturing to temp file for completion check
+  iteration_output=$(mktemp)
+  set +e
+  shadowenv exec -- devx claude -- --dangerously-skip-permissions --print \
+    --output-format stream-json --verbose \
+    "You are in iteration $iteration of a Ralph loop (max $MAX_ITERATIONS).
+
+Read the PRD at $PRD_FILE for your task and exit criteria.
+Read RALPH_NOTES.md (if it exists) for context from previous iterations.
+
+IMPORTANT:
+- Complete ONE meaningful chunk of work this iteration
+- Update RALPH_NOTES.md with what you accomplished and what remains
+- Only output $COMPLETION_MARKER when ALL exit criteria in the PRD are fully met
+- If work remains, do NOT output the completion marker" \
+    2>&1 | tee -a "$LOG_FILE" > "$iteration_output"
+  claude_exit=${PIPESTATUS[0]}
+  set -e
+
+  iteration_end=$(date +%s)
+  iteration_duration=$((iteration_end - iteration_start))
+
+  dim "Iteration took ${iteration_duration}s"
+
+  # Restore PRD if it was modified (ensures consistent prompt across iterations)
+  if ! git diff --quiet -- "$PRD_FILE" 2>/dev/null; then
+    warn "PRD was modified during iteration, restoring from git..."
+    if git checkout -- "$PRD_FILE" 2>/dev/null; then
+      ok "PRD restored"
+    else
+      warn "Could not restore PRD (may not be tracked yet)"
+    fi
+  fi
+
+  # Commit changes (if any), excluding the PRD file
+  if ! git diff --quiet 2>/dev/null || ! git diff --cached --quiet 2>/dev/null || [[ -n $(git ls-files --others --exclude-standard 2>/dev/null) ]]; then
+    info "Committing iteration $iteration changes..."
+
+    # Stage all changes except the PRD
+    git add -A 2>/dev/null || true
+    git reset HEAD -- "$PRD_FILE" 2>/dev/null || true
+
+    # Only commit if there are staged changes
+    if ! git diff --cached --quiet 2>/dev/null; then
+      if git commit -m "ralph: iteration $iteration
+
+Automated commit from Ralph loop.
+PRD: $PRD_FILENAME" 2>/dev/null; then
+        ok "Committed"
+      else
+        warn "Commit failed (possibly due to hooks)"
+      fi
+    else
+      dim "No changes to commit"
+    fi
+  else
+    dim "No changes to commit"
+  fi
+
+  # Check for completion marker in Claude's final result (not the whole output which includes the prompt)
+  # The stream-json format has a final {"type":"result",...,"result":"..."} line
+  # We only want to match if the marker appears in Claude's actual response
+  if grep '"type":"result"' "$iteration_output" | grep -qF "$COMPLETION_MARKER"; then
+    echo ""
+    ok "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    ok "COMPLETE after $iteration iterations"
+    ok "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    total_time=$(($(date +%s) - start_time))
+    dim "Total time: $((total_time / 60))m $((total_time % 60))s"
+
+    rm -f "$iteration_output"
+    exit 0
+  fi
+
+  rm -f "$iteration_output"
+done
+
+echo ""
+warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+warn "Max iterations ($MAX_ITERATIONS) reached without completion"
+warn "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+total_time=$(($(date +%s) - start_time))
+dim "Total time: $((total_time / 60))m $((total_time % 60))s"
+
+exit 1

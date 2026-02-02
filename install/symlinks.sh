@@ -13,6 +13,7 @@ SYMLINKS=(
   "claude/commands:$HOME/.claude/commands"
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
+  "bin/ralph:$HOME/.local/bin/ralph"
 )
 
 # Colors (may be inherited from parent script)
