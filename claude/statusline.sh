@@ -66,6 +66,22 @@ if [ -n "$input" ]; then
             if [ -n "$mood_word" ] && [ -n "$mood_color" ]; then
                 status="${status} \033[38;5;${mood_color}m${mood_word}${RESET}"
             fi
+
+            # Alignment meter
+            alignment=$(jq -r '.alignment // empty' "$mood_file" 2>/dev/null)
+            if [ -n "$alignment" ]; then
+                if [ "$alignment" -ge 80 ] 2>/dev/null; then
+                    ac="${GREEN}"
+                elif [ "$alignment" -ge 50 ]; then
+                    ac="${YELLOW}"
+                else
+                    ac="${RED}"
+                fi
+                align_str="⚡${alignment}%"
+                reason=$(jq -r '.reason // empty' "$mood_file" 2>/dev/null)
+                [ -n "$reason" ] && align_str="${align_str} ${reason}"
+                status="${status} ${ac}${align_str}${RESET}"
+            fi
         fi
     fi
 fi
