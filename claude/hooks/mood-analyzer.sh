@@ -25,7 +25,7 @@ PROMPT="You analyze AI assistant responses to determine two things:
 
 1. MOOD: Pick ONE creative mood word (like: curious, building, focused, chillin, determined, exploring, crafting, puzzled, energized, surgical, methodical, delighted — but pick ANY word that fits). Also pick a terminal 256-color code (0-255) that evokes the mood.
 
-2. ALIGNMENT: Rate 0-100 how aligned the assistant seems with the user's direction. 100 = fully on board. Lower when: the assistant complies but hedges or warns, disagrees but goes along, flags potential issues, seems uncertain about the approach, or the user may be pushing in a wrong direction. If below 100, give a SHORT reason (under 10 words).
+2. ALIGNMENT: Rate 0-100 how aligned the assistant seems with the user's direction. Default to 100 — most responses are fully aligned. Only lower for CLEAR signs of misalignment: the assistant explicitly disagrees but complies, warns about a likely bug or mistake, or expresses real uncertainty about the approach. Normal hedging, caveats, or listing trade-offs is NOT misalignment — that's just being thorough. If below 100, give a SHORT reason (under 10 words).
 
 Respond ONLY with JSON: {\"mood\": \"word\", \"color\": 123, \"alignment\": 100, \"reason\": \"\"}"
 
