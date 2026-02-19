@@ -52,4 +52,22 @@ if [ -n "$input" ]; then
     fi
 fi
 
+# Mood from external analyzer
+if [ -n "$input" ]; then
+    session_id=$(echo "$input" | jq -r '.session_id // empty' 2>/dev/null)
+    mood_file="/tmp/claude-mood/${session_id}.json"
+    if [ -n "$session_id" ] && [ -f "$mood_file" ]; then
+        mood_ts=$(jq -r '.ts // 0' "$mood_file" 2>/dev/null)
+        now=$(date +%s)
+        age=$(( now - mood_ts ))
+        if [ "$age" -lt 300 ]; then
+            mood_word=$(jq -r '.mood // empty' "$mood_file" 2>/dev/null)
+            mood_color=$(jq -r '.color // empty' "$mood_file" 2>/dev/null)
+            if [ -n "$mood_word" ] && [ -n "$mood_color" ]; then
+                status="${status} \033[38;5;${mood_color}m${mood_word}${RESET}"
+            fi
+        fi
+    fi
+fi
+
 printf "%b" "$status"

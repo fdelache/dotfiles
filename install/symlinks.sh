@@ -13,6 +13,7 @@ SYMLINKS=(
   "claude/commands:$HOME/.claude/commands"
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
+  "claude/hooks:$HOME/.claude/hooks"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
 
@@ -58,3 +59,13 @@ for entry in "${SYMLINKS[@]}"; do
   ln -s "$source_path" "$target"
   echo "${GREEN}  ✓${NC} $target_name ${DIM}(linked)${NC}"
 done
+
+# Merge hooks config into settings.json
+HOOKS_FILE="$DOTFILES_PATH/claude/settings-hooks.json"
+SETTINGS_FILE="$HOME/.claude/settings.json"
+
+if [[ -f "$HOOKS_FILE" && -f "$SETTINGS_FILE" ]]; then
+  jq -s '.[0] * .[1]' "$SETTINGS_FILE" "$HOOKS_FILE" > "${SETTINGS_FILE}.tmp" \
+    && mv "${SETTINGS_FILE}.tmp" "$SETTINGS_FILE" \
+    && echo "${GREEN}  ✓${NC} ~/.claude/settings.json ${DIM}(hooks merged)${NC}"
+fi
