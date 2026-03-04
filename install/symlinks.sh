@@ -5,6 +5,27 @@
 
 DOTFILES_PATH="${DOTFILES_PATH:-$HOME/src/github.com/fdelache/dotfiles}"
 
+# Colors (may be inherited from parent script)
+GREEN="${GREEN:-\033[0;32m}"
+YELLOW="${YELLOW:-\033[0;33m}"
+DIM="${DIM:-\033[2m}"
+NC="${NC:-\033[0m}"
+
+# Migrate old ~/.pi -> dotfiles/pi symlink setup to a real ~/.pi directory.
+# This keeps runtime state (for example settings.json) outside the git repository.
+PI_REPO_PATH="$DOTFILES_PATH/pi"
+PI_HOME_PATH="$HOME/.pi"
+
+if [[ -L "$PI_HOME_PATH" ]]; then
+  current=$(readlink "$PI_HOME_PATH")
+  if [[ "$current" == "$PI_REPO_PATH" ]]; then
+    rm "$PI_HOME_PATH"
+    mkdir -p "$PI_HOME_PATH"
+    cp -R "$PI_REPO_PATH"/. "$PI_HOME_PATH"/
+    echo "${YELLOW}  ↗${NC} ~/.pi ${DIM}(migrated from repo symlink to real directory)${NC}"
+  fi
+fi
+
 # Define symlinks: "source:target"
 SYMLINKS=(
   "zsh/zshrc.local:$HOME/.zshrc.local"
@@ -14,15 +35,14 @@ SYMLINKS=(
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
-  "pi:$HOME/.pi"
+  "pi/skills:$HOME/.pi/skills"
+  "pi/agent/extensions:$HOME/.pi/agent/extensions"
+  "pi/agent/skills:$HOME/.pi/agent/skills"
+  "pi/agent-shopify/extensions:$HOME/.pi/agent-shopify/extensions"
+  "pi/agent-shopify/skills:$HOME/.pi/agent-shopify/skills"
+  "pi/agent-shopify/models.json:$HOME/.pi/agent-shopify/models.json"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
-
-# Colors (may be inherited from parent script)
-GREEN="${GREEN:-\033[0;32m}"
-YELLOW="${YELLOW:-\033[0;33m}"
-DIM="${DIM:-\033[2m}"
-NC="${NC:-\033[0m}"
 
 for entry in "${SYMLINKS[@]}"; do
   source="${entry%%:*}"

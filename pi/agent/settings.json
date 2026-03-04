@@ -1,7 +1,0 @@
-{
-  "defaultThinkingLevel": "medium",
-  "quietStartup": true,
-  "packages": [
-    "npm:pi-hashline-edit"
-  ]
-}

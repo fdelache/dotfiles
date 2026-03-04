@@ -6,7 +6,7 @@ Omacase provides a base macOS development environment. This repo extends it with
 - World-aware shell prompt (integrates with Shopify's `worldpath`)
 - Custom aliases and functions
 - Claude Code agents and commands
-- Pi configuration (settings + extensions)
+- Pi configuration (extensions + skills; profile settings are local)
 
 ## Installation
 
@@ -38,8 +38,8 @@ dotfiles/
 │   ├── agents/           # Claude Code agent definitions
 │   └── commands/         # Claude Code slash commands
 ├── pi/
-│   ├── agent/            # pi default profile config
-│   └── agent-shopify/    # pi Shopify profile config
+│   ├── agent/            # pi default profile extensions/skills
+│   └── agent-shopify/    # pi Shopify profile extensions/skills/models
 └── install/
     └── symlinks.sh       # Symlink definitions
 ```
@@ -51,9 +51,9 @@ dotfiles/
 | `zsh/zshrc.local` | `~/.zshrc.local` |
 | `claude/agents/` | `~/.claude/agents` |
 | `claude/commands/` | `~/.claude/commands` |
-| `pi/` | `~/.pi` |
+| `pi/agent*/extensions`, `pi/agent*/skills`, `pi/skills`, `pi/agent-shopify/models.json` | matching paths under `~/.pi/` |
 
-Note: transient Pi state is ignored via `pi/.gitignore` (for example `agent-shopify/auth.json`, `agent-shopify/sessions/`, `agent-shopify/git/`).
+Note: Pi profile `settings.json` files are intentionally **not** managed by dotfiles. Pi creates/manages them locally in `~/.pi`.
 ## Customization
 
 ### Adding Aliases

@@ -1,6 +1,8 @@
 agent-shopify/auth.json
 agent-shopify/sessions/
 agent-shopify/git/
+agent/settings.json
+agent-shopify/settings.json
 **/*.backup.*
 agent/extensions/buildkite/credentials.json
 .DS_Store
