@@ -95,7 +95,7 @@ export default function (pi: ExtensionAPI) {
 										: level === "high"
 											? "thinkingHigh"
 											: "thinkingXhigh";
-						parts.push(theme.fg(token, `🧠:${level}`));
+						parts.push(theme.fg(token, `🧠 ${level}`));
 					}
 
 					const dir = process.cwd().split("/").pop() || process.cwd();
