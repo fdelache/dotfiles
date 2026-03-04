@@ -14,6 +14,7 @@ SYMLINKS=(
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
+  "pi:$HOME/.pi"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
 

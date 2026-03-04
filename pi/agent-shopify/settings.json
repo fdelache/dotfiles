@@ -1,0 +1,18 @@
+{
+  "lastChangelogVersion": "0.55.4",
+  "defaultThinkingLevel": "medium",
+  "quietStartup": true,
+  "packages": [
+    "npm:pi-hashline-edit",
+    {
+      "source": "https://github.com/shopify-playground/shop-pi-fy",
+      "extensions": [
+        "+extensions/no-sleep-while-working/index.ts",
+        "-extensions/vim-mode/index.ts"
+      ]
+    }
+  ],
+  "theme": "dark",
+  "defaultProvider": "openai",
+  "defaultModel": "gpt-5.3-codex"
+}
