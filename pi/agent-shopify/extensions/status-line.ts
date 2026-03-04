@@ -4,8 +4,7 @@ import { execFile } from "node:child_process";
 
 export default function (pi: ExtensionAPI) {
 	const fallbackRefreshMs = 30_000;
-	const minRetryMs = 5_000;
-	const ansiRegex = /\x1B\[[0-9;]*m/g;
+	const minRetryMs = 2_000;
 
 	let fallbackBranch: string | null = null;
 	let lastFallbackAttempt = 0;
@@ -15,19 +14,6 @@ export default function (pi: ExtensionAPI) {
 		return !!branch && branch !== ".invalid" && branch !== "detached";
 	};
 
-	const parseBranchFromGtInfo = (output: string) => {
-		const firstLine = output
-			.replace(ansiRegex, "")
-			.split(/\r?\n/)
-			.map((line) => line.trim())
-			.find((line) => line.length > 0);
-
-		if (!firstLine || !isRenderableBranch(firstLine)) {
-			return null;
-		}
-
-		return firstLine;
-	};
 
 	const getWorktreeName = () => {
 		const match = process.cwd().match(/\/world\/trees\/([^/]+)\//);
@@ -48,16 +34,19 @@ export default function (pi: ExtensionAPI) {
 		fallbackInFlight = true;
 
 		execFile(
-			"gt",
-			["branch", "info"],
-			{ encoding: "utf8", timeout: 1200, maxBuffer: 16 * 1024 },
+			"git",
+			["symbolic-ref", "--short", "HEAD"],
+			{ encoding: "utf8", timeout: 2000, maxBuffer: 4 * 1024 },
 			(error, stdout) => {
 				fallbackInFlight = false;
 				if (error) {
 					return;
 				}
 
-				fallbackBranch = parseBranchFromGtInfo(stdout);
+				const branch = stdout.trim();
+				if (isRenderableBranch(branch)) {
+					fallbackBranch = branch;
+				}
 			},
 		);
 	};
