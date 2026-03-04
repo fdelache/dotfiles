@@ -1,0 +1,5 @@
+agent-shopify/auth.json
+agent-shopify/sessions/
+agent-shopify/git/
+**/*.backup.*
+.DS_Store
