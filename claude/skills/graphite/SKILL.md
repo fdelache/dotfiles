@@ -1,101 +1,332 @@
 ---
 name: graphite
-description: Use when creating PRs, pushing branches, or using Graphite CLI (gt) commands. Covers gt submit, gt create, stacked PRs, and PR description formatting.
+description: This skill will be used when the user asks about "graphite", "gt commands", "stacked PRs", "stacking pull requests", "merge queue", "gt sync", "gt submit", "gt create", "gt modify", or needs help with Graphite CLI workflows, PR stacking, or Graphite integrations.
 ---
 
-# Graphite CLI Reference
+# Graphite
 
-## Environment Setup
+## Overview
 
-Always prefix shell commands with `shadowenv exec --` to ensure environment variables are set.
+Graphite is a platform for creating, reviewing, and merging stacked pull requests with GitHub. The `gt` CLI simplifies git commands and enables PR stacking to help developers move faster and stay unblocked by breaking large changes into small, incremental, reviewable pieces.
 
-## Commit Message Best Practices
+## Core Concepts
 
-1. **Focus on the "why", not the "what"**: Explain motivation and benefits, not what changed
-2. **Highlight security implications**: Clearly state if change prevents vulnerabilities
-3. **Describe behavior changes**: How does the API/behavior change from the developer's perspective
-4. **Use active voice**: "Make X do Y" rather than "X was changed to Y"
-5. **Use `[ci full]` prefix**: When changes might have wider impacts beyond the immediate code
+### What is Stacking?
 
-## Graphite CLI Commands
+Stacking organizes related code changes as a sequence of dependent pull requests rather than one large PR. Benefits:
+- Stay unblocked while waiting for reviews
+- Smaller PRs get reviewed faster
+- Clearer review context for each change
+- Merge independently as reviews complete
 
-### Viewing Stack Status
-- `gt log` - Show current stack structure with PRs and commits
-- `gt log short` - Compact view of the stack
+### Stack Structure
 
-### Creating Commits and Branches
-- `git add <files> && gt create -m "message"` - Stage specific files, then create branch
-- `gt create -a -m "message"` - Stage ALL changes (including untracked) and create new branch
-- `gt create -u -m "message"` - Stage only tracked file updates and create new branch
+```
+main
+ └── feature-api (PR #1) ← bottom of stack
+      └── feature-frontend (PR #2)
+           └── feature-tests (PR #3) ← top of stack
+```
 
-### Modifying Commits
-- `gt modify` - Amend current commit (keeps message)
-- `gt modify -a` - Stage all changes and amend
-- `gt modify -c -m "message"` - Create new commit instead of amending
+## Quick Start
 
-### Syncing and Rebasing
-- `gt get` - Sync current stack from remote (use when encountering stale trunk or merged PR issues)
-- `gt move --onto main` - Rebase current branch onto main/trunk
-- `gt track --parent main` - Re-parent branch to track main directly (when stacked on now-merged PRs)
-- `gt restack` - Rebase branch onto its parent
-- `gt restack --only` - Restack only current branch
+### Installation
 
-### Submitting PRs
-- `gt submit --no-edit` - Push and create/update PR (uses commit message as PR title/description)
-- `gt submit --no-edit -s` - Submit entire stack (current branch + descendants)
-- `gt submit --no-edit --draft` - Create PR in draft mode
-- `gt submit --no-edit --publish` - Publish draft PRs
-- `gt submit --no-edit --reviewers "user1,user2"` - Set reviewers
+```bash
+# macOS
+brew install withgraphite/tap/graphite
 
-### Common Error Fixes
+# npm
+npm install -g @withgraphite/graphite-cli
 
-| Error | Solution |
+# Authenticate
+gt auth --token <github-token>
+```
+
+### Basic Workflow
+
+```bash
+# 1. Create first branch in stack
+gt checkout main
+# make changes...
+gt create --all --message "feat(api): add user endpoint"
+
+# 2. Stack another PR on top
+# make more changes...
+gt create --all --message "feat(frontend): add user page"
+
+# 3. Submit entire stack
+gt submit --stack  # or: gt ss
+
+# 4. Sync with trunk and cleanup
+gt sync
+```
+
+## Essential Commands
+
+### Navigation
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `gt checkout` | `gt co` | Switch to branch (interactive picker) |
+| `gt up` | `gt u` | Move up one branch in stack |
+| `gt down` | `gt d` | Move down one branch in stack |
+| `gt top` | `gt t` | Jump to top of stack |
+| `gt bottom` | `gt b` | Jump to bottom of stack |
+| `gt log` | - | Display full stack with PR info |
+| `gt log short` | `gt ls` | List all branches in stack |
+
+### Creating & Modifying
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `gt create -am "msg"` | `gt c -am` | Create branch, stage all, commit |
+| `gt modify -a` | `gt m -a` | Stage all and amend current commit |
+| `gt modify -c` | `gt m -c` | Add new commit (don't amend) |
+| `gt modify -cam "msg"` | - | Stage all, add commit with message |
+
+### Syncing & Submitting
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `gt sync` | - | Pull trunk, restack, cleanup merged |
+| `gt submit` | - | Push current + downstack, create PRs |
+| `gt submit --stack` | `gt ss` | Push entire stack |
+| `gt submit -u` | - | Update existing PRs only |
+
+### Reorganizing
+
+| Command | Alias | Description |
+|---------|-------|-------------|
+| `gt restack` | - | Rebase stack on updated parents |
+| `gt move` | - | Change branch parent |
+| `gt fold` | - | Merge branch into parent |
+| `gt split` | `gt sp` | Split branch by commit/hunk/file |
+| `gt squash` | `gt sq` | Combine commits |
+| `gt reorder` | - | Rearrange branches in stack |
+| `gt absorb` | `gt ab` | Distribute staged changes to relevant commits |
+
+### Collaboration & Recovery
+
+| Command | Description |
+|---------|-------------|
+| `gt get <branch>` | Fetch teammate's stack locally |
+| `gt track` | Start managing existing git branch |
+| `gt untrack` | Stop tracking branch |
+| `gt freeze` | Lock branch against modifications |
+| `gt undo` | Reverse last Graphite operation |
+
+## Common Workflows
+
+### Addressing Review Feedback
+
+```bash
+# 1. Checkout the PR needing changes
+gt checkout first_pr_in_stack
+
+# 2. Make edits, then amend
+gt modify -a
+
+# 3. Resubmit (auto-restacks dependent branches)
+gt submit --stack
+```
+
+### Adding Changes to Middle of Stack
+
+```bash
+# Stage specific changes
+git add specific_file.js
+
+# Absorb distributes to relevant commits downstack
+gt absorb
+```
+
+### Splitting a Large Branch
+
+```bash
+# Interactive split by commit, hunk, or file
+gt split
+```
+
+### Merging Stack
+
+Navigate to Graphite web UI to merge, or use `gt merge` for the topmost PR. The merge queue handles dependent PRs automatically.
+
+## Web Features
+
+### PR Inbox
+
+An "email client" for PRs with sections:
+- Needs your review
+- Approved / Returned to you
+- Merging / Recently merged
+- Drafts / Waiting for review
+
+Customize with filters, search (Cmd+K), and shareable filter links.
+
+### AI Reviews
+
+Automatic code analysis identifying:
+- Logic bugs and edge cases
+- Security vulnerabilities
+- Performance issues
+- Debug statements / accidentally committed code
+
+Configure in repository settings. Focuses on real bugs, not style nitpicks.
+
+### Automations
+
+Create rules that trigger when PRs match criteria:
+- Add reviewers (individuals or teams)
+- Apply labels
+- Post comments
+- Send Slack notifications
+
+Configure via Graphite web app → Automations.
+
+## Merge Queue
+
+Stack-aware merge queue that:
+- Validates stacked PRs in parallel (not sequentially)
+- Enables fast-forward merges without re-running CI
+- Keeps trunk stable with automatic rebasing
+
+Strategies: **Rebase** (preserve commits), **Squash** (one commit per PR), or **Fast-Forward**.
+
+Setup: Configure GitHub branch protection, then enable in Graphite repository settings.
+
+## GT MCP Integration
+
+Enable AI agents to create stacked PRs automatically:
+
+```bash
+# Claude Code
+claude mcp add graphite gt mcp
+
+# Cursor (add to settings)
+{
+  "mcpServers": {
+    "graphite": { "command": "gt", "args": ["mcp"] }
+  }
+}
+```
+
+Requires CLI version 1.6.7+.
+
+## CI Optimizations
+
+Reduce CI runs for stacked PRs by configuring Graphite's CI optimizer:
+- Configure which PRs in stack run CI (top, bottom, all)
+- API endpoint returns boolean for skip decision
+- Fail-safe: if API errors, CI runs normally
+
+See `references/integrations.md` for GitHub Actions and Buildkite setup.
+
+## Configuration
+
+### Shell Completion
+
+```bash
+gt completion >> ~/.zshrc   # zsh
+gt completion >> ~/.bashrc  # bash
+gt fish >> ~/.config/fish/completions/gt.fish
+```
+
+### Branch Naming
+
+Configure via `gt config`:
+- Custom prefix (e.g., initials)
+- Date prepending
+- Character restrictions
+
+### Multiple GitHub Accounts
+
+Define profiles in `~/.config/graphite/user_config` for separate auth tokens.
+
+## Monorepo Optimizations
+
+In large monorepos with thousands of branches, `gt` commands can be slow. The main bottlenecks are:
+
+1. **Branch enumeration** - `git for-each-ref` lists all branches
+2. **Metadata reading** - Spawns one git process per tracked branch
+3. **Git fetch** - Negotiates with thousands of remote refs
+
+### Cleanup Stale Branches
+
+Untrack all branches with CLOSED or MERGED PRs (requires `gh` CLI):
+
+```bash
+bash ~/.claude/skills/graphite/scripts/cleanup-stale-branches.sh
+```
+
+See `scripts/cleanup-stale-branches.sh` for the full script.
+
+### Other Optimizations
+
+- **Use `gt restack` instead of `gt sync`** when you don't need to fetch from remote
+- **Use direct checkout** (`gt checkout branch-name`) instead of interactive picker
+- **Limit git fetch refspec** to only fetch branches you need:
+  ```bash
+  git config remote.origin.fetch '+refs/heads/main:refs/remotes/origin/main'
+  git config --add remote.origin.fetch '+refs/heads/your-prefix/*:refs/remotes/origin/your-prefix/*'
+  ```
+- **Enable git maintenance** for faster git operations:
+  ```bash
+  git maintenance start
+  git commit-graph write --reachable
+  ```
+
+## Troubleshooting Quick Reference
+
+| Issue | Solution |
 |-------|----------|
-| "PRs have already been merged or closed" | Run `gt get` first |
-| "Aborting submit due to out of date trunk" | Run `gt get` to update trunk |
-| Branch stacked on merged PR | `gt track --parent main` then `gt restack --only` |
+| Stack out of sync | `gt sync` to pull trunk and restack |
+| Merge conflicts | Resolve conflicts, then `gt continue` |
+| Wrong parent branch | `gt move` to reassign parent |
+| Need to undo | `gt undo` reverses last operation |
+| Branch not tracked | `gt track` to add existing branch |
+| Slow gt commands | Run cleanup script above, use `gt restack` instead of `gt sync` |
 
-## PR Description Guidelines
+## Background Agents
 
-Write a concise PR description that:
-- Explains why the change is needed
-- Answers likely reviewer questions
-- Does NOT summarize the diff (reviewers can read code)
-- Includes only essential context (rationale, safety, testing, rollback) when relevant
+Describe tasks in plain language; Graphite spins up sandboxes to write code, run tests, and open PRs:
+- Quick fixes from phone/browser without cloning
+- Generate boilerplate and scaffolding
+- Add tests without context-switching
+- $10 free credits; unlimited with own Claude API key
 
-## PR Workflow: Submit Then Configure
+## Graphite Chat
 
-1. **Submit PR** (creates in draft mode when using `--no-edit`):
-   ```bash
-   gt submit --no-edit
-   ```
+AI assistant in PR review interface:
+- Request PR summaries and explanations
+- Propose fixes applied with one click
+- Search codebase for related code
+- Debug CI failures with full context
 
-2. **Update PR description** using GitHub API:
-   ```bash
-   gh api repos/{owner}/{repo}/pulls/{number} -X PATCH -f title="Title" -f body="$(cat <<'EOF'
-   ## Summary
-   - Change 1
-   - Change 2
+## Additional Resources
 
-   ## Test plan
-   - [ ] Test item
-   EOF
-   )"
-   ```
+### Reference Files
 
-3. **Mark ready for review**:
-   ```bash
-   gh pr ready {number} -R {owner}/{repo}
-   ```
+For detailed documentation, consult:
 
-## Reading GitHub Issues and PRs
+**CLI & Commands:**
+- **`references/commands.md`** - Complete command reference with all options, Git vs gt comparison, installation, authentication
 
-**ALWAYS use `gh view-md <github-issue-or-pr-url>`** when given a GitHub URL. Returns a well-formatted markdown summary with all necessary information.
+**Workflows:**
+- **`references/stacking-workflows.md`** - Detailed stacking patterns, advanced workflows, collaboration, common scenarios
+- **`references/best-practices.md`** - Reviewing stacked PRs, creating stacks, organization setup, anti-patterns
 
-## Safety Checks
+**Platform Features:**
+- **`references/merge-queue.md`** - Merge queue setup, optimizations (parallel CI, batching, fast-forward), troubleshooting
+- **`references/ai-features.md`** - AI reviews, Graphite Chat, Background Agents, GT MCP integration, customization
+- **`references/web-features.md`** - PR inbox, insights, admin, automations, merging, plans & billing
 
-Before pushing:
-- Verify all intended files are staged
-- Check for any pre-commit warnings or failing checks
-- If force pushing is required, confirm with the user first
-- If there are uncommitted changes from multiple features, ask how to organize commits
+**Configuration:**
+- **`references/integrations.md`** - Slack, VS Code, Linear, Jira, CI optimizations setup
+- **`references/configuration.md`** - Full CLI configuration options, branch naming, multi-account
+
+### External Links
+
+- Documentation: https://graphite.com/docs
+- LLM-optimized docs: https://graphite.com/docs/llms-full.txt
+- Activate CLI: https://app.graphite.com/activate
