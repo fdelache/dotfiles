@@ -73,8 +73,11 @@ export default function (pi: ExtensionAPI) {
 					const sep = theme.fg("dim", " ❯ ");
 					const parts: string[] = [];
 
-					parts.push(theme.fg("accent", "π"));
-
+					const statuses = Array.from(footerData.getExtensionStatuses());
+					const isWorldMode = statuses.some(
+						([key, text]) => key === "world" || /world mode/i.test(text || ""),
+					);
+					parts.push(theme.fg("accent", isWorldMode ? "🌎" : "π"));
 					const model = ctx.model;
 					if (model) {
 						parts.push(theme.fg("syntaxNumber", `🖥 ${model.name || model.id}`));
@@ -92,7 +95,7 @@ export default function (pi: ExtensionAPI) {
 										: level === "high"
 											? "thinkingHigh"
 											: "thinkingXhigh";
-						parts.push(theme.fg(token, `think:${level}`));
+						parts.push(theme.fg(token, `🧠:${level}`));
 					}
 
 					const dir = process.cwd().split("/").pop() || process.cwd();
@@ -112,8 +115,8 @@ export default function (pi: ExtensionAPI) {
 						parts.push(theme.fg("warning", ` ${branch}`));
 					}
 
-					const statuses = footerData.getExtensionStatuses();
-					for (const [, text] of statuses) {
+					for (const [key, text] of statuses) {
+						if (key === "world" || /world mode/i.test(text || "")) continue;
 						if (text) parts.push(text);
 					}
 
