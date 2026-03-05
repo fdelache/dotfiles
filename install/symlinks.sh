@@ -41,6 +41,7 @@ SYMLINKS=(
   "pi/agent-shopify/extensions:$HOME/.pi/agent-shopify/extensions"
   "pi/agent-shopify/skills:$HOME/.pi/agent-shopify/skills"
   "pi/agent-shopify/models.json:$HOME/.pi/agent-shopify/models.json"
+  "pi/agent-shopify/prompts:$HOME/.pi/agent-shopify/prompts"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
 
