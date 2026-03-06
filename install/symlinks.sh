@@ -36,8 +36,6 @@ SYMLINKS=(
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
   "pi/skills:$HOME/.pi/skills"
-  "pi/agent/extensions:$HOME/.pi/agent/extensions"
-  "pi/agent/skills:$HOME/.pi/agent/skills"
   "pi/agent-shopify/extensions:$HOME/.pi/agent-shopify/extensions"
   "pi/agent-shopify/skills:$HOME/.pi/agent-shopify/skills"
   "pi/agent-shopify/models.json:$HOME/.pi/agent-shopify/models.json"
@@ -81,6 +79,26 @@ for entry in "${SYMLINKS[@]}"; do
   ln -s "$source_path" "$target"
   echo "${GREEN}  ✓${NC} $target_name ${DIM}(linked)${NC}"
 done
+
+# Alias ~/.pi/agent -> ~/.pi/agent-shopify (single unified profile)
+if [[ -d "$HOME/.pi/agent" && ! -L "$HOME/.pi/agent" ]]; then
+  backup="$HOME/.pi/agent.backup.$(date +%Y%m%d%H%M%S)"
+  mv "$HOME/.pi/agent" "$backup"
+  echo "${YELLOW}  ↗${NC} ~/.pi/agent ${DIM}(backed up old directory)${NC}"
+fi
+if [[ -L "$HOME/.pi/agent" ]]; then
+  current=$(readlink "$HOME/.pi/agent")
+  if [[ "$current" == "$HOME/.pi/agent-shopify" ]]; then
+    echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify)${NC}"
+  else
+    rm "$HOME/.pi/agent"
+    ln -s "$HOME/.pi/agent-shopify" "$HOME/.pi/agent"
+    echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, updated)${NC}"
+  fi
+else
+  ln -s "$HOME/.pi/agent-shopify" "$HOME/.pi/agent"
+  echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, linked)${NC}"
+fi
 
 # Merge hooks config into settings.json
 HOOKS_FILE="$DOTFILES_PATH/claude/settings-hooks.json"
