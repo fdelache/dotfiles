@@ -18,7 +18,6 @@ SYMLINKS=(
   "claude/CLAUDE.md:$HOME/.claude/CLAUDE.md"
   "claude/agents:$HOME/.claude/agents"
   "claude/commands:$HOME/.claude/commands"
-  "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
   "bin/ralph:$HOME/.local/bin/ralph"
@@ -114,7 +113,7 @@ fi
 
 # Install devx skills from registry
 if command -v skills &>/dev/null; then
-  for skill in agent-ci agent-observe agent-slack agent-vault; do
+  for skill in agent-ci agent-observe agent-slack agent-vault graphite weekly-impact world-structure; do
     if [[ -d "$HOME/.claude/skills/$skill" ]]; then
       echo "${GREEN}  ✓${NC} skill: $skill"
     else
