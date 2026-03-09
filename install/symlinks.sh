@@ -11,20 +11,6 @@ YELLOW="${YELLOW:-\033[0;33m}"
 DIM="${DIM:-\033[2m}"
 NC="${NC:-\033[0m}"
 
-# Migrate old ~/.pi -> dotfiles/pi symlink setup to a real ~/.pi directory.
-# This keeps runtime state (for example settings.json) outside the git repository.
-PI_REPO_PATH="$DOTFILES_PATH/pi"
-PI_HOME_PATH="$HOME/.pi"
-
-if [[ -L "$PI_HOME_PATH" ]]; then
-  current=$(readlink "$PI_HOME_PATH")
-  if [[ "$current" == "$PI_REPO_PATH" ]]; then
-    rm "$PI_HOME_PATH"
-    mkdir -p "$PI_HOME_PATH"
-    cp -R "$PI_REPO_PATH"/. "$PI_HOME_PATH"/
-    echo "${YELLOW}  ↗${NC} ~/.pi ${DIM}(migrated from repo symlink to real directory)${NC}"
-  fi
-fi
 
 # Define symlinks: "source:target"
 SYMLINKS=(
@@ -35,11 +21,7 @@ SYMLINKS=(
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
-  "pi/skills:$HOME/.pi/skills"
-  "pi/agent-shopify/extensions:$HOME/.pi/agent-shopify/extensions"
-  "pi/agent-shopify/skills:$HOME/.pi/agent-shopify/skills"
   "pi/agent-shopify/models.json:$HOME/.pi/agent-shopify/models.json"
-  "pi/agent-shopify/prompts:$HOME/.pi/agent-shopify/prompts"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
 
@@ -98,6 +80,36 @@ if [[ -L "$HOME/.pi/agent" ]]; then
 else
   ln -s "$HOME/.pi/agent-shopify" "$HOME/.pi/agent"
   echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, linked)${NC}"
+fi
+
+# Install pi-config package (extensions, skills, prompts)
+if command -v pi &>/dev/null; then
+  if pi list 2>/dev/null | grep -q "pi-config"; then
+    pi update git:github.com/fdelache/pi-config 2>/dev/null \
+      && echo "${GREEN}  ✓${NC} pi-config ${DIM}(updated)${NC}" \
+      || echo "${DIM}  ○ pi-config (update failed)${NC}"
+  else
+    pi install git:github.com/fdelache/pi-config 2>/dev/null \
+      && echo "${GREEN}  ✓${NC} pi-config ${DIM}(installed)${NC}" \
+      || echo "${DIM}  ○ pi-config (install failed — run manually: pi install git:github.com/fdelache/pi-config)${NC}"
+  fi
+else
+  echo "${DIM}  ○ pi-config (pi not installed — skipping)${NC}"
+fi
+
+# Install devx skills from registry
+if command -v skills &>/dev/null; then
+  for skill in agent-ci agent-observe agent-slack agent-vault; do
+    if [[ -d "$HOME/.claude/skills/$skill" ]]; then
+      echo "${GREEN}  ✓${NC} skill: $skill"
+    else
+      skills get "$skill" 2>/dev/null \
+        && echo "${GREEN}  ✓${NC} skill: $skill ${DIM}(installed)${NC}" \
+        || echo "${DIM}  ○ skill: $skill (install failed)${NC}"
+    fi
+  done
+else
+  echo "${DIM}  ○ devx skills (not installed — skipping)${NC}"
 fi
 
 # Merge hooks config into settings.json
