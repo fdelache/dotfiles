@@ -81,6 +81,19 @@ else
   echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, linked)${NC}"
 fi
 
+# Install subagent definitions from pi-config
+AGENTS_SRC="$HOME/.pi/agent-shopify/git/github.com/fdelache/pi-config/agents"
+AGENTS_DST="$HOME/.pi/agent/agents"
+if [[ -d "$AGENTS_SRC" ]]; then
+  mkdir -p "$AGENTS_DST"
+  for f in "$AGENTS_SRC"/*.md; do
+    [[ -f "$f" ]] || continue
+    name=$(basename "$f")
+    cp -f "$f" "$AGENTS_DST/$name"
+    echo "${GREEN}  ✓${NC} agent: $name"
+  done
+fi
+
 # Install pi packages
 if command -v pi &>/dev/null; then
   for pkg in git:github.com/fdelache/pi-config "https://github.com/shopify-playground/shop-pi-fy"; do
