@@ -21,6 +21,7 @@ SYMLINKS=(
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
   "bin/ralph:$HOME/.local/bin/ralph"
+  "tmux/tmux.conf:$HOME/.tmux.conf"
 )
 
 for entry in "${SYMLINKS[@]}"; do
