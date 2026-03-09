@@ -21,7 +21,6 @@ SYMLINKS=(
   "claude/skills:$HOME/.claude/skills"
   "claude/statusline.sh:$HOME/.claude/statusline.sh"
   "claude/hooks:$HOME/.claude/hooks"
-  "pi/agent-shopify/models.json:$HOME/.pi/agent-shopify/models.json"
   "bin/ralph:$HOME/.local/bin/ralph"
 )
 
@@ -82,19 +81,22 @@ else
   echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, linked)${NC}"
 fi
 
-# Install pi-config package (extensions, skills, prompts)
+# Install pi packages
 if command -v pi &>/dev/null; then
-  if pi list 2>/dev/null | grep -q "pi-config"; then
-    pi update git:github.com/fdelache/pi-config 2>/dev/null \
-      && echo "${GREEN}  ✓${NC} pi-config ${DIM}(updated)${NC}" \
-      || echo "${DIM}  ○ pi-config (update failed)${NC}"
-  else
-    pi install git:github.com/fdelache/pi-config 2>/dev/null \
-      && echo "${GREEN}  ✓${NC} pi-config ${DIM}(installed)${NC}" \
-      || echo "${DIM}  ○ pi-config (install failed — run manually: pi install git:github.com/fdelache/pi-config)${NC}"
-  fi
+  for pkg in git:github.com/fdelache/pi-config "https://github.com/shopify-playground/shop-pi-fy"; do
+    pkg_name=$(basename "$pkg")
+    if pi list 2>/dev/null | grep -q "$pkg_name"; then
+      pi update "$pkg" 2>/dev/null \
+        && echo "${GREEN}  ✓${NC} $pkg_name ${DIM}(updated)${NC}" \
+        || echo "${DIM}  ○ $pkg_name (update failed)${NC}"
+    else
+      pi install "$pkg" 2>/dev/null \
+        && echo "${GREEN}  ✓${NC} $pkg_name ${DIM}(installed)${NC}" \
+        || echo "${DIM}  ○ $pkg_name (install failed)${NC}"
+    fi
+  done
 else
-  echo "${DIM}  ○ pi-config (pi not installed — skipping)${NC}"
+  echo "${DIM}  ○ pi packages (pi not installed — skipping)${NC}"
 fi
 
 # Install devx skills from registry
