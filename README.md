@@ -38,8 +38,7 @@ dotfiles/
 │   ├── agents/           # Claude Code agent definitions
 │   └── commands/         # Claude Code slash commands
 ├── pi/
-│   ├── agent/            # pi default profile extensions/skills
-│   └── agent-shopify/    # pi Shopify profile extensions/skills/models
+│   └── agent/            # pi profile extensions/skills
 └── install/
     └── symlinks.sh       # Symlink definitions
 ```
@@ -51,7 +50,7 @@ dotfiles/
 | `zsh/zshrc.local` | `~/.zshrc.local` |
 | `claude/agents/` | `~/.claude/agents` |
 | `claude/commands/` | `~/.claude/commands` |
-| `pi/agent*/extensions`, `pi/agent*/skills`, `pi/skills`, `pi/agent-shopify/models.json` | matching paths under `~/.pi/` |
+| `pi/agent/extensions`, `pi/agent/skills` | matching paths under `~/.pi/` |
 
 Note: Pi profile `settings.json` files are intentionally **not** managed by dotfiles. Pi creates/manages them locally in `~/.pi`.
 ## Customization

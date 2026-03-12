@@ -61,28 +61,8 @@ for entry in "${SYMLINKS[@]}"; do
   echo "${GREEN}  ✓${NC} $target_name ${DIM}(linked)${NC}"
 done
 
-# Alias ~/.pi/agent -> ~/.pi/agent-shopify (single unified profile)
-if [[ -d "$HOME/.pi/agent" && ! -L "$HOME/.pi/agent" ]]; then
-  backup="$HOME/.pi/agent.backup.$(date +%Y%m%d%H%M%S)"
-  mv "$HOME/.pi/agent" "$backup"
-  echo "${YELLOW}  ↗${NC} ~/.pi/agent ${DIM}(backed up old directory)${NC}"
-fi
-if [[ -L "$HOME/.pi/agent" ]]; then
-  current=$(readlink "$HOME/.pi/agent")
-  if [[ "$current" == "$HOME/.pi/agent-shopify" ]]; then
-    echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify)${NC}"
-  else
-    rm "$HOME/.pi/agent"
-    ln -s "$HOME/.pi/agent-shopify" "$HOME/.pi/agent"
-    echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, updated)${NC}"
-  fi
-else
-  ln -s "$HOME/.pi/agent-shopify" "$HOME/.pi/agent"
-  echo "${GREEN}  ✓${NC} ~/.pi/agent ${DIM}(→ agent-shopify, linked)${NC}"
-fi
-
 # Install subagent definitions from pi-config
-AGENTS_SRC="$HOME/.pi/agent-shopify/git/github.com/fdelache/pi-config/agents"
+AGENTS_SRC="$HOME/.pi/agent/git/github.com/fdelache/pi-config/agents"
 AGENTS_DST="$HOME/.pi/agent/agents"
 if [[ -d "$AGENTS_SRC" ]]; then
   mkdir -p "$AGENTS_DST"
