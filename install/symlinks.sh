@@ -22,6 +22,7 @@ SYMLINKS=(
   "claude/hooks:$HOME/.claude/hooks"
   "bin/ralph:$HOME/.local/bin/ralph"
   "tmux/tmux.conf:$HOME/.tmux.conf"
+  "zsh/zshenv.local:$HOME/.zshenv"
 )
 
 for entry in "${SYMLINKS[@]}"; do

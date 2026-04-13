@@ -1,0 +1,13 @@
+# Environment variables for all shell types (interactive + non-interactive)
+# Symlinked to ~/.zshenv by install/symlinks.sh
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# chruby
+export PATH="/usr/local/share/chruby:$PATH"
+
+# aliases
+alias whatsup="DEV_NO_AUTO_UPDATE=1 dev ps --all-namespaces | grep running"
+alias git-remove-untracked='git fetch --prune 1>/dev/null && git branch -vv | grep -v "\* " | egrep ": (disparue|gone)\]" | awk "{print \$1}" | xargs git branch -D'
