@@ -5,5 +5,4 @@ cheat() {
 }
 
 # wtp — worktree pool manager for shop/world
-export PATH="$HOME/src/github.com/shopify-playground/wtp/bin:$PATH"
-[[ -f "$HOME/src/github.com/shopify-playground/wtp/shell/wtp.zsh" ]] && source "$HOME/src/github.com/shopify-playground/wtp/shell/wtp.zsh"
+eval "$(_wtp init --zsh)"
