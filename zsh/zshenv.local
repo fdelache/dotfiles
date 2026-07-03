@@ -10,4 +10,4 @@ export PATH="/usr/local/share/chruby:$PATH"
 
 # aliases
 alias whatsup="DEV_NO_AUTO_UPDATE=1 dev ps --all-namespaces | grep running"
-alias git-remove-untracked='git fetch --prune 1>/dev/null && git branch -vv | grep -v "\* " | egrep ": (disparue|gone)\]" | awk "{print \$1}" | xargs git branch -D'
+# git-remove-untracked lives in zsh/functions.zsh (World/wtp-aware version)
