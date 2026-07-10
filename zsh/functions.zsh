@@ -28,13 +28,25 @@ git-remove-untracked() {
   current=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
 
   # 1. Ask gitstream if each local branch has a merged PR (per-branch --head).
-  local b
+  # Be defensive: Gitstream may have stale temporary refs or transient API/fetch
+  # failures. Those should skip the affected branch, not abort the cleanup.
+  local b pr_json pr_status first_error
   local -a merged
   for b in ${(f)"$(git for-each-ref --format='%(refname:short)' refs/heads/)"}; do
     [[ "$b" == "$current" ]] && continue
     [[ "$b" =~ $protected ]] && continue
-    if gs pr list --head "$b" --state all --json --limit 20 2>/dev/null \
-         | jq -e 'any(.[]; .xGitstreamStateExtended == "merged")' >/dev/null 2>&1; then
+
+    pr_json=$(gs pr list --head "$b" --state all --json --limit 20 2>&1)
+    pr_status=$?
+    if (( pr_status != 0 )); then
+      first_error=$(printf '%s\n' "$pr_json" | grep -m1 -E 'fatal:|error:' 2>/dev/null)
+      [[ -z "$first_error" ]] && first_error=${pr_json%%$'\n'*}
+      [[ -z "$first_error" ]] && first_error="exit $pr_status"
+      echo "⚠️  skipping '$b' — gitstream PR lookup failed: $first_error" >&2
+      continue
+    fi
+
+    if echo "$pr_json" | jq -e 'any(.[]; .xGitstreamStateExtended == "merged")' >/dev/null 2>&1; then
       merged+=("$b")
     fi
   done
